@@ -17,6 +17,8 @@ docker container ls -a
 docker stop <CONTAINER_ID>
 # remove a container
 docker container rm <CONTAINER_ID>
+# remove all stopped containers, all dangling images and all unused networks:
+docker system prune
 ```
 
 ```
