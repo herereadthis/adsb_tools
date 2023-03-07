@@ -32,18 +32,25 @@ def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> fl
     return distance
 
 
-def find_closest(coordinates: List[Dict[str, float]], target_lat: float, target_lon: float) -> Dict[str, float]:
+def find_closest(
+        coordinates: List[Dict[str, float]],
+        target_lat: float,
+        target_lon: float
+        ) -> Dict[str, float]:
     """
-    Finds the dictionary in `coordinates` that is closest to the given target coordinates.
+    Finds the dictionary in `coordinates` that is closest to the given target 
+    coordinates.
 
     Args:
-        coordinates (List[Dict[str, float]]): A list of dictionaries where each dictionary has
-                                              'latitude' and 'longitude' keys containing float values.
+        coordinates (List[Dict[str, float]]): A list of dictionaries where each
+                dictionary has 'latitude' and 'longitude' keys containing float
+                values.
         target_lat (float): Target latitude in degrees
         target_lon (float): Target longitude in degrees
 
     Returns:
-        Dict[str, float]: The dictionary in `coordinates` that is closest to the target coordinates.
+        Dict[str, float]: The dictionary in `coordinates` that is closest to the
+                target coordinates.
     """
 
     closest_dict = None

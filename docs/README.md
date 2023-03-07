@@ -35,7 +35,7 @@ pip3 freeze > requirements.txt
 #### Post installation example usage
 
 ```python
-from geodict.distance.calculate import find_closest
+from adsb_tools.distance.calculate import find_closest
 
 coordinates = [
     {'latitude': 37.7749, 'longitude': -122.4194},
