@@ -7,14 +7,9 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='adsb_tools',
-    version='0.1.2',
-    packages=['adsb_tools.distance'],
-    entry_points={
-        'console_scripts': [
-            'adsb_tools=adsb_tools.distance.__main__:main'
-        ]
-    },
-    python_requires='>=3.6',
+    version='0.1.4',
+    packages=['adsb_tools'],
+    python_requires='>=3.7',
     install_requires=[
         'typing'
     ],
