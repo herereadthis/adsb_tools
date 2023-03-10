@@ -13,15 +13,15 @@ python3 -m venv env
 source env/bin/activate
 
 # test and package the module
-python -m pip install wheel
-python setup.py sdist bdist_wheel
+python3 -m pip install --upgrade build
+python3 -m build
 ```
 
 This will create a dist directory with a .tar.gz file and a .whl file.
 
 ```shell
 # upload to PyPi using twine
-python -m pip install twine
+python3 -m pip install --upgrade twine
 twine upload dist/*
 ```
 
