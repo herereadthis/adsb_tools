@@ -1,4 +1,6 @@
 import math
+import json
+import requests
 
 EARTH_RADIUS_KM = 6371.0
 
@@ -71,3 +73,22 @@ def add_aircraft_options(aircraft_list, base_lat, base_lon):
         aircraft_list_with_options.append(new_aircraft)
 
     return sorted(aircraft_list_with_options, key=lambda x: x["distance"])
+
+
+def get_aircraft(base_url, filter_aircraft = True):
+    """
+    Get the aircraft messages and returns as list
+    """
+    receiver_url = f'{base_url}/data/aircraft.json'
+
+    response = requests.get(receiver_url)
+    json_obj = json.loads(response.content)
+    result = json_obj
+
+    if (filter_aircraft):
+        result = [
+            d for d in json_obj['aircraft']
+            if "lat" in d and "lon" in d and d["lat"] is not None and d["lon"] is not None
+        ]
+
+    return result

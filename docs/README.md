@@ -12,6 +12,15 @@ A ton of the stuff in this package was done via ChatGPT.
 python3 -m venv env
 source env/bin/activate
 
+also,
+
+```shell
+# add packages to requirements.txt
+pip3 freeze > requirements.txt
+```
+
+#### setup.py build
+
 # test and package the module
 python -m pip install wheel
 python setup.py sdist bdist_wheel
@@ -25,12 +34,15 @@ python -m pip install twine
 twine upload dist/*
 ```
 
-also,
+#### pyproject.toml build
 
 ```shell
-# add packages to requirements.txt
-pip3 freeze > requirements.txt
+python3 -m pip install --upgrade build
+python3 -m build
+python3 -m pip install --upgrade twine
+twine upload dist/*
 ```
+
 
 #### Post installation example usage
 

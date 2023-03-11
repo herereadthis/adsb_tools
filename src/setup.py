@@ -7,11 +7,12 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='adsb_tools',
-    version='0.1.4',
+    version='0.1.6',
     packages=['adsb_tools'],
     python_requires='>=3.7',
     install_requires=[
-        'typing'
+        'requests',
+        'pytz'
     ],
     author='herereadthis',
     author_email='herereadthis.github@gmail.com',
