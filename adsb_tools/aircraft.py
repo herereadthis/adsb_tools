@@ -66,6 +66,7 @@ def add_aircraft_options(aircraft_list, base_lat, base_lon):
         new_aircraft['distance'] = distance
         new_aircraft['degrees'] = degrees
         new_aircraft['direction'] = direction
+        new_aircraft['icao'] = aircraft['hex']
 
         aircraft_list_with_options.append(new_aircraft)
 
