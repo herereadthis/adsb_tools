@@ -75,6 +75,34 @@ def add_aircraft_options(aircraft_list, base_lat, base_lon):
     return sorted(aircraft_list_with_options, key=lambda x: x["distance"])
 
 
+def get_aircraft_image(aircraft_hex):
+    """
+    Gets the image of an aircraft, given its hex. If no image found, return
+    empty dictionary.
+    """
+    headers = {
+        'User-Agent': 'My Unique User Agent'
+    }
+    planespotter_url = f'https://api.planespotters.net/pub/photos/hex/{aircraft_hex}'
+    response = requests.get(planespotter_url, headers=headers)
+    json_obj = json.loads(response.content)
+
+    image = {}
+    if (json_obj['photos'] and json_obj['photos'][0] and bool(json_obj['photos'][0])):
+        photo_attributes = json_obj['photos'][0]
+        thumbnail = photo_attributes['thumbnail']
+        thumbnail_large = photo_attributes['thumbnail_large']
+        target_photo = thumbnail if thumbnail_large is None else thumbnail_large
+        image = {
+            'height': target_photo['size']['height'],
+            'width': target_photo['size']['width'],
+            'src': target_photo['src'],
+            'url': planespotter_url
+        }
+
+    return image
+
+
 def get_aircraft(base_url, filter_aircraft = True):
     """
     Get the aircraft messages and returns as list

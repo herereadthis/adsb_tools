@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "adsb_tools"
-version = "0.1.6"
+version = "0.1.8"
 authors = [
     { name="herereadthis", email="herereadthis.github@gmail.com" },
 ]
@@ -18,7 +18,8 @@ classifiers = [
 ]
 dependencies = [
     'requests >= 2.28.2',
-    'pytz >= 2022.7.1'
+    'pytz >= 2022.7.1',
+    'timezonefinder >= 6.1.9'
 ]
 
 [project.urls]

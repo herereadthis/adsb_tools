@@ -1,5 +1,7 @@
 # aircraft.json
 
+<!-- https://www.adsbexchange.com/ads-b-data-field-explanations/ -->
+
 
 <table border="0" style="border-width: 0">
     <tbody>
