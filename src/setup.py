@@ -7,12 +7,13 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='adsb_tools',
-    version='0.1.8',
+    version='0.1.15',
     packages=['adsb_tools'],
     python_requires='>=3.7',
     install_requires=[
         'requests',
-        'pytz'
+        'pytz',
+        'timezonefinder'
     ],
     author='herereadthis',
     author_email='herereadthis.github@gmail.com',
