@@ -1,5 +1,5 @@
-twine==4.0.2
-typing==3.7.4.3
-wheel==0.38.4
 timezonefinder==6.1.9
 pytz==2022.7.1
+requests==2.28.2
+build==0.10.0
+twine==4.0.2

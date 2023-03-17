@@ -12,16 +12,16 @@ def call_url(url: str, timeout: int = 5) -> requests.Response:
         requests.Response: A `Response` object containing information about the response from the server,
             or `None` if an error occurs.
     """
-    response = None
     try:
+        print(f"{url}: attempting request...")
         response = requests.get(url=url, timeout=timeout)
         response.raise_for_status()
     except requests.exceptions.Timeout:
-        print("Timeout error occurred")
+        print(f"{url}: timeout error occurred.")
     except requests.exceptions.HTTPError as err:
-        print(f"HTTP error occurred: {err}")
+        print(f"{url}: HTTP error occurred: {err}")
     except requests.exceptions.RequestException as err:
-        print(f"An error occurred: {err}")
+        print(f"{url}: An error occurred: {err}")
     finally:
-        print("Request completed")
+        print(f'{url}: request completed.')
     return response

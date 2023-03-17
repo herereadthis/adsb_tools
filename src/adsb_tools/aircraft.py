@@ -1,6 +1,7 @@
 import math
 import json
 import requests
+from adsb_tools.utils import requests_utils
 
 EARTH_RADIUS_KM = 6371.0
 
@@ -103,13 +104,56 @@ def get_aircraft_image(aircraft_hex):
     return image
 
 
+def get_hex_db_flight(icao_24):
+    """
+    Get values from HexDB
+    """
+    hex_db_url = f'https://hexdb.io/api/v1/aircraft/{icao_24}'
+    hex_db_result = requests_utils.call_url(hex_db_url)
+    hex_db_obj = json.loads(hex_db_result.content)
+
+    return {
+        'icao_type_code': hex_db_obj['ICAOTypeCode'],
+        'country_iso': None,
+        'country_name': None,
+        'manufacturer': hex_db_obj['Manufacturer'],
+        'mode_s': hex_db_obj['ModeS'],
+        'operator_flag_code': hex_db_obj['OperatorFlagCode'],
+        'owner': hex_db_obj['RegisteredOwners'],
+        'registration': hex_db_obj['Registration'],
+        'type': hex_db_obj['Type']
+    }
+
+
+def get_adsb_db_flight(icao_24):
+    """
+    Get values from ADSB DB
+    """
+    adsb_db_url = f'https://api.adsbdb.com/v0/aircraft/{icao_24}'
+    adsb_db_result = requests_utils.call_url(adsb_db_url)
+    adsb_db_obj = json.loads(adsb_db_result.content)
+    adsb_aircraft = adsb_db_obj['response']['aircraft']
+
+    return {
+        'icao_type_code': adsb_aircraft['icao_type'],
+        'manufacturer': adsb_aircraft['manufacturer'],
+        'country_iso': adsb_aircraft['registered_owner_country_iso_name'],
+        'country_name': adsb_aircraft['registered_owner_country_name'],
+        'mode_s': adsb_aircraft['mode_s'],
+        'operator_flag_code': adsb_aircraft['registered_owner_operator_flag_code'],
+        'owner': adsb_aircraft['registered_owner'],
+        'registration': adsb_aircraft['registration'],
+        'type': adsb_aircraft['type']
+    }
+
+
 def get_aircraft(base_url, filter_aircraft = True):
     """
     Get the aircraft messages and returns as list
     """
     receiver_url = f'{base_url}/data/aircraft.json'
 
-    response = requests.get(receiver_url)
+    response = requests_utils.call_url(receiver_url)
     json_obj = json.loads(response.content)
     result = json_obj
 
