@@ -1,6 +1,7 @@
 import requests
+import time
 
-def call_url(url: str, timeout: int = 5) -> requests.Response:
+def call_url(url: str, timeout: int = 5, headers: dict = {}) -> requests.Response:
     """
     Sends an HTTP GET request to the specified URL with the given timeout.
 
@@ -12,9 +13,10 @@ def call_url(url: str, timeout: int = 5) -> requests.Response:
         requests.Response: A `Response` object containing information about the response from the server,
             or `None` if an error occurs.
     """
+    start_time = time.time() * 1000
     try:
         print(f"{url}: attempting request...")
-        response = requests.get(url=url, timeout=timeout)
+        response = requests.get(url=url, timeout=timeout, headers=headers)
         response.raise_for_status()
     except requests.exceptions.Timeout:
         print(f"{url}: timeout error occurred.")
@@ -23,5 +25,6 @@ def call_url(url: str, timeout: int = 5) -> requests.Response:
     except requests.exceptions.RequestException as err:
         print(f"{url}: An error occurred: {err}")
     finally:
-        print(f'{url}: request completed.')
+        end_time = time.time() * 1000
+        print(f'{url}: request completed, {end_time - start_time:.0f}ms')
     return response
