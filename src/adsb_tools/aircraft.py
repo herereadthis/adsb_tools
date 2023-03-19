@@ -1,6 +1,6 @@
-import json
 import math
 from adsb_tools.utils import requests_utils
+from pprint import pprint
 
 EARTH_RADIUS_KM = 6371.0
 
@@ -86,10 +86,7 @@ class Aircraft:
         Get the aircraft messages and returns as list
         """
         aircraft_url = f'{self.base_adsb_url}/data/aircraft.json'
-
-        response = requests_utils.call_url(aircraft_url)
-        # response = requests.get(aircraft_url)
-        json_obj = json.loads(response.content)
+        json_obj = requests_utils.get_api(aircraft_url)
         result = json_obj
 
         if (filter_aircraft):
@@ -143,21 +140,23 @@ class Aircraft:
         Get values from HexDB
         """
         hex_db_url = f'https://hexdb.io/api/v1/aircraft/{icao_24}'
-        hex_db_result = requests_utils.call_url(hex_db_url)
-        # hex_db_result = requests.get(hex_db_url)
-        hex_db_obj = json.loads(hex_db_result.content)
+        hex_db_obj = requests_utils.get_api(hex_db_url)
 
-        return {
-            'icao_type_code': hex_db_obj['ICAOTypeCode'],
+        pprint(hex_db_obj)
+
+        mapped_keys = {
+            'icao_type_code': 'ICAOTypeCode',
             'country_iso': None,
             'country_name': None,
-            'manufacturer': hex_db_obj['Manufacturer'],
-            'mode_s': hex_db_obj['ModeS'],
-            'operator_flag_code': hex_db_obj['OperatorFlagCode'],
-            'owner': hex_db_obj['RegisteredOwners'],
-            'registration': hex_db_obj['Registration'],
-            'type': hex_db_obj['Type']
+            'manufacturer': 'Manufacturer',
+            'mode_s': 'ModeS',
+            'operator_flag_code': 'OperatorFlagCode',
+            'owner': 'RegisteredOwners',
+            'registration': 'Registration',
+            'type': 'Type'
         }
+        
+        return requests_utils.map_keys(hex_db_obj, mapped_keys)
 
 
     @staticmethod
@@ -166,22 +165,22 @@ class Aircraft:
         Get values from ADSB DB
         """
         adsb_db_url = f'https://api.adsbdb.com/v0/aircraft/{icao_24}'
-        adsb_db_result = requests_utils.call_url(adsb_db_url)
-        # adsb_db_result = requests.get(adsb_db_url)
-        adsb_db_obj = json.loads(adsb_db_result.content)
+        adsb_db_obj = requests_utils.get_api(adsb_db_url)
         adsb_aircraft = adsb_db_obj['response']['aircraft']
 
-        return {
-            'icao_type_code': adsb_aircraft['icao_type'],
-            'manufacturer': adsb_aircraft['manufacturer'],
-            'country_iso': adsb_aircraft['registered_owner_country_iso_name'],
-            'country_name': adsb_aircraft['registered_owner_country_name'],
-            'mode_s': adsb_aircraft['mode_s'],
-            'operator_flag_code': adsb_aircraft['registered_owner_operator_flag_code'],
-            'owner': adsb_aircraft['registered_owner'],
-            'registration': adsb_aircraft['registration'],
-            'type': adsb_aircraft['type']
+        mapped_keys = {
+            'icao_type_code': 'icao_type',
+            'manufacturer': 'manufacturer',
+            'country_iso': 'registered_owner_country_iso_name',
+            'country_name': 'registered_owner_country_name',
+            'mode_s': 'mode_s',
+            'operator_flag_code': 'registered_owner_operator_flag_code',
+            'owner': 'registered_owner',
+            'registration': 'registration',
+            'type': 'type'
         }
+        
+        return requests_utils.map_keys(adsb_aircraft, mapped_keys)
 
 
     @staticmethod
@@ -194,9 +193,7 @@ class Aircraft:
             'User-Agent': 'My Unique User Agent'
         }
         planespotter_url = f'https://api.planespotters.net/pub/photos/hex/{aircraft_hex}'
-        response = requests_utils.call_url(planespotter_url, headers=headers)
-        # response = requests.get(planespotter_url, headers=headers)
-        json_obj = json.loads(response.content)
+        json_obj = requests_utils.get_api(planespotter_url, headers = headers)
 
         image = {}
         if (json_obj['photos'] and json_obj['photos'][0] and bool(json_obj['photos'][0])):

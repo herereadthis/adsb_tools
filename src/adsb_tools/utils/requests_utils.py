@@ -1,3 +1,4 @@
+import json
 import requests
 import time
 
@@ -28,3 +29,29 @@ def call_url(url: str, timeout: int = 5, headers: dict = {}) -> requests.Respons
         end_time = time.time() * 1000
         print(f'{url}: request completed, {end_time - start_time:.0f}ms')
     return response
+
+
+def get_api(url, timeout = 5, headers = {}):
+    """
+    makes a GET request to a Rest API and returns a dictionary or list
+    """
+    result = call_url(url, timeout, headers)
+    content = json.loads(result.content)
+    return content
+
+
+def map_keys(original_dict, mapped_keys):
+    """
+    Takes the values from one dictionary and returns a new dictionary with the
+    same values, but with different key names
+    """
+    new_dict = {}
+
+    for key in mapped_keys:
+        mapped_key = mapped_keys[key]
+        if (mapped_key is None):
+            new_dict[key] = None
+        elif (mapped_key in original_dict):
+            new_dict[key] = original_dict[mapped_key]
+
+    return new_dict
