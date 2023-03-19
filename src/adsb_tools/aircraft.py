@@ -56,6 +56,10 @@ class Aircraft:
 
         nearest_aircraft.update(flight_options)
         nearest_aircraft['image'] = aircraft_image
+
+        if ('flightaware' in nearest_aircraft and bool(nearest_aircraft['flightaware'])):
+            nearest_aircraft['flightaware']['live_url'] = f"https://flightaware.com/live/flight/{flight_options['registration']}"
+
         self.nearest_aircraft = nearest_aircraft
 
     
@@ -70,7 +74,8 @@ class Aircraft:
             'owner',
             'registration',
             'type',
-            'image'
+            'image',
+            'flightaware'
         ]
         for key in keys_to_map:
             self.nearest_aircraft[key] = stored_aircraft[key]
@@ -118,6 +123,14 @@ class Aircraft:
             new_aircraft['direction'] = direction
             new_aircraft['icao'] = aircraft['hex']
             new_aircraft['icao_24'] = aircraft['hex']
+
+            redirect_url = f"https://flightaware.com/live/modes/{aircraft['hex']}/redirect"
+            if ('flight' in aircraft and bool(aircraft['flight'])):
+                redirect_url = f"https://flightaware.com/live/modes/{aircraft['hex']}/ident/{aircraft['flight']}/redirect"
+
+            new_aircraft['flightaware'] = {
+                'redirect_url': redirect_url
+            }
 
             aircraft_list_with_options.append(new_aircraft)
 
