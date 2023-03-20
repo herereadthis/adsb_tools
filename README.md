@@ -1,6 +1,11 @@
 # adsb_tools
 
-Scripts and stuff to help you parse through data from [dump1090](https://github.com/flightaware/dump1090) messages
+Scripts and stuff to help you parse through data from [Dump1090] messages. 
+
+Dump1090 is a Mode S decoder specifically designed for RTLSDR devices. It is a simple ADS-B (Automatic Dependent 
+Surveillance - Broadcast) receiver, decoder and web-server. It requires a RTLSDR USB-stick and Osmocom's librtlsdr.
+FlightAware maintains the [current version of Dump1090](https://github.com/flightaware/dump1090).
+
 
 ## Aircraft Class
 
