@@ -46,7 +46,7 @@ def get_grid_data(latitude, longitude):
 
     forcast_hourly_url = None
     local_timezone_name = None
-    if (grid_response):
+    if grid_response:
         grid_json_obj = json.loads(grid_response.content)
         grid_properties =  grid_json_obj['properties']
         forcast_hourly_url = grid_properties['forecastHourly']

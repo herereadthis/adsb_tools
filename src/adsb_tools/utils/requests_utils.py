@@ -1,8 +1,26 @@
-import json
-import requests
-import time
+"""
+This module provides several utility functions for making HTTP requests and processing JSON responses.
 
-def call_url(url: str, timeout: int = 5, headers: dict = {}) -> requests.Response:
+Functions:
+- `call_url(url: str, timeout: int = 5, headers: dict = {}) -> requests.Response`: Sends an HTTP GET request to the
+  specified URL with the given timeout.
+- `get_api(url, timeout = 5, headers = {})`: Makes a GET request to a Rest API and returns a dictionary or list.
+- `map_keys(original_dict, mapped_keys)`: Takes the values from one dictionary and returns a new dictionary with the
+  same values, but with different key names.
+
+Example Usage:
+--------------
+>>> response = call_url('https://api.github.com/users/octocat/repos')
+>>> content = get_api('https://api.github.com/users/octocat/repos')
+>>> new_dict = map_keys({'a': 1, 'b': 2}, {'c': 'a', 'd': None})
+"""
+
+import json
+from typing import Dict
+import time
+import requests
+
+def call_url(url: str, timeout: int = 5, headers: Dict[str, str] = {}) -> requests.Response:
     """
     Sends an HTTP GET request to the specified URL with the given timeout.
 
@@ -31,7 +49,7 @@ def call_url(url: str, timeout: int = 5, headers: dict = {}) -> requests.Respons
     return response
 
 
-def get_api(url, timeout = 5, headers = {}):
+def get_api(url: str, timeout: int = 5, headers = {}):
     """
     makes a GET request to a Rest API and returns a dictionary or list
     """
@@ -40,7 +58,7 @@ def get_api(url, timeout = 5, headers = {}):
     return content
 
 
-def map_keys(original_dict, mapped_keys):
+def map_keys(original_dict: Dict, mapped_keys: Dict) -> Dict:
     """
     Takes the values from one dictionary and returns a new dictionary with the
     same values, but with different key names
@@ -49,9 +67,9 @@ def map_keys(original_dict, mapped_keys):
 
     for key in mapped_keys:
         mapped_key = mapped_keys[key]
-        if (mapped_key is None):
+        if mapped_key is None:
             new_dict[key] = None
-        elif (mapped_key in original_dict):
+        elif mapped_key in original_dict:
             new_dict[key] = original_dict[mapped_key]
 
     return new_dict

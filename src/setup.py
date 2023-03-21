@@ -1,13 +1,11 @@
-from setuptools import setup
-
-# read the contents of your README file
 from pathlib import Path
+from setuptools import setup
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='adsb_tools',
-    version='0.1.27',
+    version='0.1.28',
     packages=['adsb_tools'],
     python_requires='>=3.7',
     install_requires=[

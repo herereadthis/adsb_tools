@@ -1,0 +1,3 @@
+[MASTER]
+# Set the maximum number of characters per line
+max-line-length=120

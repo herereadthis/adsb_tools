@@ -18,14 +18,29 @@ class Aircraft:
             self.base_longitude = base_longitude
             self.augment_aircraft_list()
             self.set_nearest_aircraft()
-    
+
 
     def augment_aircraft_list(self):
+        """
+        Adds additional options to the aircraft list and sets it as the new `aircraft_list`.
+
+        Returns:
+            None
+        """
         aircraft_list = self.add_aircraft_options()
         self.aircraft_list = aircraft_list
-    
+
 
     def set_nearest_aircraft(self):
+        """
+        Sets the nearest aircraft to the current location and adds links to various databases.
+
+        The function creates a copy of the first aircraft in the aircraft list, adds links to the HEXDB and ADSB databases,
+        and sets the result as the nearest aircraft.
+
+        Returns:
+            None
+        """
         # dict creates a copy of the dictionary. aircraft_list remains unaffected.
         nearest_aircraft = dict(self.aircraft_list[0])
         icao_24 = nearest_aircraft['icao']
@@ -39,7 +54,7 @@ class Aircraft:
         }
 
         self.nearest_aircraft = nearest_aircraft
-    
+
 
     def retrieve_external_aircraft_options(self):
         nearest_aircraft = self.nearest_aircraft
@@ -49,20 +64,21 @@ class Aircraft:
         adsb_db_options = Aircraft.get_adsb_db_flight(icao_24)
 
         flight_options = {}
-        if (adsb_db_options):
+        if adsb_db_options:
             flight_options = adsb_db_options
-        elif (hex_db_options):
+        elif hex_db_options:
             flight_options= hex_db_options
 
         nearest_aircraft.update(flight_options)
         nearest_aircraft['image'] = aircraft_image
 
         if ('flightaware' in nearest_aircraft and bool(nearest_aircraft['flightaware'])):
-            nearest_aircraft['flightaware']['live_url'] = f"https://flightaware.com/live/flight/{flight_options['registration']}"
+            live_url = f"https://flightaware.com/live/flight/{flight_options['registration']}"
+            nearest_aircraft['flightaware']['live_url'] = live_url
 
         self.nearest_aircraft = nearest_aircraft
 
-    
+
     def map_static_aircraft_options(self, stored_aircraft):
         keys_to_map = [
             'country_iso',
@@ -89,14 +105,14 @@ class Aircraft:
         json_obj = requests_utils.get_api(aircraft_url)
         result = json_obj
 
-        if (filter_aircraft):
+        if filter_aircraft:
             result = [
                 d for d in json_obj['aircraft']
                 if "lat" in d and "lon" in d and d["lat"] is not None and d["lon"] is not None
             ]
 
         return result
-    
+
 
     def add_aircraft_options(self):
         """
@@ -121,9 +137,10 @@ class Aircraft:
             new_aircraft['icao'] = aircraft['hex']
             new_aircraft['icao_24'] = aircraft['hex']
 
-            redirect_url = f"https://flightaware.com/live/modes/{aircraft['hex']}/redirect"
+            mode_s = aircraft['hex']
+            redirect_url = f"https://flightaware.com/live/modes/{mode_s}/redirect"
             if ('flight' in aircraft and bool(aircraft['flight'])):
-                redirect_url = f"https://flightaware.com/live/modes/{aircraft['hex']}/ident/{aircraft['flight']}/redirect"
+                redirect_url = f"https://flightaware.com/live/modes/{mode_s}/ident/{aircraft['flight']}/redirect"
 
             new_aircraft['flightaware'] = {
                 'redirect_url': redirect_url
@@ -155,7 +172,7 @@ class Aircraft:
             'registration': 'Registration',
             'type': 'Type'
         }
-        
+
         return requests_utils.map_keys(hex_db_obj, mapped_keys)
 
 
@@ -179,7 +196,7 @@ class Aircraft:
             'registration': 'registration',
             'type': 'type'
         }
-        
+
         return requests_utils.map_keys(adsb_aircraft, mapped_keys)
 
 
@@ -232,12 +249,12 @@ class Aircraft:
         # Haversine formula
         dlat = lat2 - lat1
         dlon = lon2 - lon1
-        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-        distance = EARTH_RADIUS_KM * c
+        square_half_chord = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        angular_distance = 2 * math.atan2(math.sqrt(square_half_chord), math.sqrt(1-square_half_chord))
+        distance = EARTH_RADIUS_KM * angular_distance
 
         return distance
-    
+
 
     @staticmethod
     def get_direction(base_lat, base_lon, dest_lat, dest_lon):
