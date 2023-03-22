@@ -23,9 +23,8 @@ class Aircraft:
     def augment_aircraft_list(self):
         """
         Adds additional options to the aircraft list and sets it as the new `aircraft_list`.
-
-        Returns:
-            None
+        This method does not exist as part of init, so that it can be called separately by whatever has instantiated the
+        Aircraft class
         """
         aircraft_list = self.add_aircraft_options()
         self.aircraft_list = aircraft_list
@@ -57,6 +56,10 @@ class Aircraft:
 
 
     def retrieve_external_aircraft_options(self):
+        """
+        Retrieves external flight information and aircraft image for the nearest aircraft.
+        Then updates the `nearest_aircraft` dictionary with the aircraft image URL and the merged flight information.
+        """
         nearest_aircraft = self.nearest_aircraft
         icao_24 = nearest_aircraft['icao_24']
         aircraft_image = Aircraft.get_aircraft_image(icao_24)
@@ -80,6 +83,9 @@ class Aircraft:
 
 
     def map_static_aircraft_options(self, stored_aircraft):
+        """
+        Maps static aircraft information from a stored aircraft dictionary to the nearest aircraft dictionary.
+        """
         keys_to_map = [
             'country_iso',
             'country_name',
@@ -97,19 +103,13 @@ class Aircraft:
             self.nearest_aircraft[key] = stored_aircraft[key]
 
 
-    def get_aircraft_list(self, filter_aircraft = True):
+    def get_aircraft_list(self):
         """
         Get the aircraft messages and returns as list
         """
         aircraft_url = f'{self.base_adsb_url}/data/aircraft.json'
         json_obj = requests_utils.get_api(aircraft_url)
-        result = json_obj
-
-        if filter_aircraft:
-            result = [
-                d for d in json_obj['aircraft']
-                if "lat" in d and "lon" in d and d["lat"] is not None and d["lon"] is not None
-            ]
+        result = json_obj['aircraft']
 
         return result
 
@@ -118,37 +118,43 @@ class Aircraft:
         """
         Adds additional data to aircraft based on aircraft properties
         """
+        print(self.aircraft_list)
         aircraft_list_with_options = []
         for aircraft in self.aircraft_list:
-            new_aircraft = aircraft.copy()
-            aircraft_lat = new_aircraft['lat']
-            aircraft_lon = new_aircraft['lon']
+            print('asgawegaweg')
+            print(aircraft)
+            if Aircraft.get_has_coordinates(aircraft):
+                new_aircraft = aircraft.copy()
+                aircraft_lat = new_aircraft['lat']
+                aircraft_lon = new_aircraft['lon']
 
-            distance = Aircraft.calculate_distance(
-                self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
-            )
-            degrees, direction = Aircraft.get_direction(
-                self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
-            )
+                distance = Aircraft.calculate_distance(
+                    self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
+                )
+                degrees, direction = Aircraft.get_direction(
+                    self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
+                )
 
-            new_aircraft['distance'] = distance
-            new_aircraft['degrees'] = degrees
-            new_aircraft['direction'] = direction
-            new_aircraft['icao'] = aircraft['hex']
-            new_aircraft['icao_24'] = aircraft['hex']
+                new_aircraft['distance'] = distance
+                new_aircraft['degrees'] = degrees
+                new_aircraft['direction'] = direction
+                new_aircraft['icao'] = aircraft['hex']
+                new_aircraft['icao_24'] = aircraft['hex']
 
-            mode_s = aircraft['hex']
-            redirect_url = f"https://flightaware.com/live/modes/{mode_s}/redirect"
-            if ('flight' in aircraft and bool(aircraft['flight'])):
-                redirect_url = f"https://flightaware.com/live/modes/{mode_s}/ident/{aircraft['flight']}/redirect"
+                mode_s = aircraft['hex']
+                redirect_url = f"https://flightaware.com/live/modes/{mode_s}/redirect"
+                if ('flight' in aircraft and bool(aircraft['flight'])):
+                    redirect_url = f"https://flightaware.com/live/modes/{mode_s}/ident/{aircraft['flight']}/redirect"
 
-            new_aircraft['flightaware'] = {
-                'redirect_url': redirect_url
-            }
+                new_aircraft['flightaware'] = {
+                    'redirect_url': redirect_url
+                }
 
-            aircraft_list_with_options.append(new_aircraft)
+                aircraft_list_with_options.append(new_aircraft)
+            else:
+                aircraft_list_with_options.append(aircraft)
 
-        return sorted(aircraft_list_with_options, key=lambda x: x["distance"])
+        return Aircraft.sort_by_distance(aircraft_list_with_options)
 
 
     @staticmethod
@@ -198,6 +204,16 @@ class Aircraft:
         }
 
         return requests_utils.map_keys(adsb_aircraft, mapped_keys)
+    
+
+    @staticmethod
+    def get_has_coordinates(aircraft = {}) -> bool:
+        """
+        Determine whether an aircraft has coordinates
+        """
+        print('aircraft')
+        print(aircraft)
+        return True if aircraft.get("lat") is not None and aircraft.get("lon") is not None else False
 
 
     @staticmethod
@@ -275,3 +291,25 @@ class Aircraft:
         direction = directions[idx]
 
         return degrees, direction
+    
+
+    @staticmethod
+    def sort_by_distance(data):
+        """
+        Sort a list of dictionaries based on their "distance" values, with dictionaries that have a defined
+        "distance" value appearing first.
+        """
+        # Split dictionaries into those with a distance key and those without
+        with_distance = []
+        without_distance = []
+        for d in data:
+            if "distance" in d:
+                with_distance.append(d)
+            else:
+                without_distance.append(d)
+
+        # Sort dictionaries with distance by their distance values
+        with_distance_sorted = sorted(with_distance, key=lambda x: x.get("distance", float("inf")))
+
+        # Combine the two lists, with dictionaries with distance at the beginning
+        return with_distance_sorted + without_distance

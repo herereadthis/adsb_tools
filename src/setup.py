@@ -5,7 +5,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='adsb_tools',
-    version='0.1.28',
+    version='0.1.29',
     packages=['adsb_tools'],
     python_requires='>=3.7',
     install_requires=[
