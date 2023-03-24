@@ -1,6 +1,6 @@
 import math
 from adsb_tools.utils import requests_utils
-from pprint import pprint
+# from pprint import pprint
 
 EARTH_RADIUS_KM = 6371.0
 
@@ -42,7 +42,7 @@ class Aircraft:
         """
         # dict creates a copy of the dictionary. aircraft_list remains unaffected.
         nearest_aircraft = dict(self.aircraft_list[0])
-        icao_24 = nearest_aircraft['icao']
+        icao_24 = nearest_aircraft['hex']
         nearest_aircraft['hexdb'] = {
             'aircraft_url': f'https://hexdb.io/api/v1/aircraft/{icao_24}',
             'conversion_url': f'https://hexdb.io/hex-reg?hex={icao_24}'
@@ -118,11 +118,10 @@ class Aircraft:
         """
         Adds additional data to aircraft based on aircraft properties
         """
-        print(self.aircraft_list)
         aircraft_list_with_options = []
         for aircraft in self.aircraft_list:
-            print('asgawegaweg')
-            print(aircraft)
+            if 'flight' in aircraft:
+                aircraft['flight'] = aircraft['flight'].strip()
             if Aircraft.get_has_coordinates(aircraft):
                 new_aircraft = aircraft.copy()
                 aircraft_lat = new_aircraft['lat']
@@ -138,7 +137,6 @@ class Aircraft:
                 new_aircraft['distance'] = distance
                 new_aircraft['degrees'] = degrees
                 new_aircraft['direction'] = direction
-                new_aircraft['icao'] = aircraft['hex']
                 new_aircraft['icao_24'] = aircraft['hex']
 
                 mode_s = aircraft['hex']
@@ -164,8 +162,6 @@ class Aircraft:
         """
         hex_db_url = f'https://hexdb.io/api/v1/aircraft/{icao_24}'
         hex_db_obj = requests_utils.get_api(hex_db_url)
-
-        pprint(hex_db_obj)
 
         mapped_keys = {
             'icao_type_code': 'ICAOTypeCode',
@@ -211,8 +207,6 @@ class Aircraft:
         """
         Determine whether an aircraft has coordinates
         """
-        print('aircraft')
-        print(aircraft)
         return True if aircraft.get("lat") is not None and aircraft.get("lon") is not None else False
 
 
