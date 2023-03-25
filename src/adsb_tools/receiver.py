@@ -10,5 +10,5 @@ class Receiver:
         self.version = receiver['version']
         self.lat = receiver['lat']
         self.lon = receiver['lon']
-        self.latitude = receiver['latitude']
-        self.longitude = receiver['longitude']
+        self.latitude = receiver['lat']
+        self.longitude = receiver['lon']
