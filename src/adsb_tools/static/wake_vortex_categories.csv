@@ -1,0 +1,25 @@
+Category,TC,CA,ICAO,Description
+A0,,0,,No ADS-B emitter category information
+A1,4,1,L,Light (< 15500 lbs)
+A2,4,2,M,Small (15500 to 75000 lbs)
+A3,4,3,M,Large (75000 to 300000 lbs)
+A4,4,4,H,High vortex large (aircraft such as B-757)
+A5,4,5,H,Heavy (> 300000 lbs)
+A6,4,6,,High performance (> 5g acceleration and 400 kts)
+A7,4,7,,Rotorcraft
+B0,,0,,No ADS-B emitter category information
+B1,3,1,,Glider / sailplane
+B2,3,2,,Lighter-than-air
+B3,3,3,,Parachutist / skydiver
+B4,3,4,,Ultralight / hang-glider / paraglider
+B5,3,5,,Reserved
+B6,3,6,,Unmanned aerial vehicle
+B7,3,7,,Space / trans-atmospheric vehicle
+C0,,0,,No ADS-B emitter category information
+C1,2,1,,Surface vehicle – emergency vehicle
+C2,2,2,,Surface vehicle – service vehicle
+C3,2,,,Point obstacle (includes tethered balloons)
+C4,2,,,Cluster obstacle
+C5,2,,,Line obstacle
+C6,1,,,Reserved
+C7,1,,,Reserved
