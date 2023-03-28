@@ -4,6 +4,12 @@ from adsb_tools.utils import requests_utils
 
 EARTH_RADIUS_KM = 6371.0
 
+RADIUS_EARTH_FEET = 20925524.9  # Radius of the Earth in feet
+RADIUS_EARTH_MILES = 3958.8  # Radius of the Earth in miles
+RADIUS_EARTH_KM = 6371.0  # Radius of the Earth in kilometers
+RADIUS_EARTH_NM = 3440.1  # Radius of the Earth in nautical miles
+RADIUS_EARTH_METERS = 6371000.0  # Radius of the Earth in meters
+
 class Aircraft:
     def __init__(self, base_adsb_url, base_latitude=None, base_longitude=None):
         self.base_adsb_url = base_adsb_url
@@ -127,16 +133,18 @@ class Aircraft:
                 aircraft_lat = new_aircraft['lat']
                 aircraft_lon = new_aircraft['lon']
 
-                distance = Aircraft.calculate_distance(
+                distances = Aircraft.calculate_distances(
                     self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
                 )
                 degrees, direction = Aircraft.get_direction(
                     self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
                 )
 
-                new_aircraft['distance'] = distance
-                new_aircraft['degrees'] = degrees
-                new_aircraft['direction'] = direction
+                new_aircraft['distance'] = {
+                    **distances,
+                    'degrees': degrees,
+                    'direction': direction,
+                }
                 new_aircraft['icao_24'] = aircraft['hex']
 
                 mode_s = aircraft['hex']
@@ -238,7 +246,7 @@ class Aircraft:
         return image
 
     @staticmethod
-    def calculate_distance(lat1, lon1, lat2, lon2):
+    def calculate_distances(lat1, lon1, lat2, lon2):
         """
         Calculates the great-circle distance between two points on the Earth's surface
         using the Haversine formula.
@@ -261,9 +269,15 @@ class Aircraft:
         dlon = lon2 - lon1
         square_half_chord = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
         angular_distance = 2 * math.atan2(math.sqrt(square_half_chord), math.sqrt(1-square_half_chord))
-        distance = EARTH_RADIUS_KM * angular_distance
 
-        return distance
+        # return distance
+        return {
+            "ft": RADIUS_EARTH_FEET * angular_distance,
+            "mi": RADIUS_EARTH_MILES * angular_distance,
+            "km": RADIUS_EARTH_KM * angular_distance,
+            "nm": RADIUS_EARTH_NM * angular_distance,
+            "m": RADIUS_EARTH_METERS * angular_distance
+        }
 
 
     @staticmethod
@@ -303,7 +317,7 @@ class Aircraft:
                 without_distance.append(d)
 
         # Sort dictionaries with distance by their distance values
-        with_distance_sorted = sorted(with_distance, key=lambda x: x.get("distance", float("inf")))
+        with_distance_sorted = sorted(with_distance, key=lambda x: x.get("distance").get("km", float("inf")))
 
         # Combine the two lists, with dictionaries with distance at the beginning
         return with_distance_sorted + without_distance
