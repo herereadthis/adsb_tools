@@ -1,4 +1,5 @@
 import math
+import numbers
 from adsb_tools.utils import requests_utils
 # from pprint import pprint
 
@@ -136,9 +137,10 @@ class Aircraft:
                 distances = Aircraft.calculate_distances(
                     self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
                 )
-                degrees, direction = Aircraft.get_direction(
+                degrees = Aircraft.get_degrees(
                     self.base_latitude, self.base_longitude, aircraft_lat, aircraft_lon
                 )
+                direction = Aircraft.get_cardinal_direction(degrees)
 
                 new_aircraft['distance'] = {
                     **distances,
@@ -146,6 +148,13 @@ class Aircraft:
                     'direction': direction,
                 }
                 new_aircraft['icao_24'] = aircraft['hex']
+                movement = {}
+                if ('track' in aircraft and isinstance(aircraft['track'], numbers.Number)):
+                    movement = {
+                        'track': aircraft['track'],
+                        'direction': Aircraft.get_cardinal_direction(aircraft['track'])
+                    }
+                new_aircraft['movement'] = movement
 
                 mode_s = aircraft['hex']
                 redirect_url = f"https://flightaware.com/live/modes/{mode_s}/redirect"
@@ -281,8 +290,8 @@ class Aircraft:
 
 
     @staticmethod
-    def get_direction(base_lat, base_lon, dest_lat, dest_lon):
-        """Calculate the direction from one coordinate to another."""
+    def get_degrees(base_lat, base_lon, dest_lat, dest_lon):
+        """Calculate the degrees from one coordinate to another."""
         # Calculate the difference between the latitudes and longitudes
         lat_diff = dest_lat - base_lat
         lon_diff = dest_lon - base_lon
@@ -291,14 +300,16 @@ class Aircraft:
         angle = math.atan2(lon_diff, lat_diff)
 
         # Convert the angle from radians to degrees
-        degrees = math.degrees(angle)
+        return math.degrees(angle)
 
+
+    @staticmethod
+    def get_cardinal_direction(degrees):
+        """Calculate the direction from one coordinate to another."""
         # Convert the angle to a compass direction
         directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
         idx = round(degrees / (360.0 / len(directions))) % len(directions)
-        direction = directions[idx]
-
-        return degrees, direction
+        return directions[idx]
     
 
     @staticmethod
