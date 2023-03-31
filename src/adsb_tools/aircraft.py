@@ -77,10 +77,14 @@ class Aircraft:
         if adsb_db_options:
             flight_options = adsb_db_options
         elif hex_db_options:
-            flight_options= hex_db_options
+            flight_options = hex_db_options
 
         nearest_aircraft.update(flight_options)
         nearest_aircraft['image'] = aircraft_image
+        nearest_aircraft['identity'] = {
+            **flight_options,
+            'image': aircraft_image
+        }
 
         if ('flightaware' in nearest_aircraft and bool(nearest_aircraft['flightaware'])):
             live_url = f"https://flightaware.com/live/flight/{flight_options['registration']}"
@@ -94,6 +98,7 @@ class Aircraft:
         Maps static aircraft information from a stored aircraft dictionary to the nearest aircraft dictionary.
         """
         keys_to_map = [
+            'identity',
             'country_iso',
             'country_name',
             'icao_type_code',
@@ -202,21 +207,29 @@ class Aircraft:
         """
         adsb_db_url = f'https://api.adsbdb.com/v0/aircraft/{icao_24}'
         adsb_db_obj = requests_utils.get_api(adsb_db_url)
-        adsb_aircraft = adsb_db_obj['response']['aircraft']
+        response = adsb_db_obj['response']
 
-        mapped_keys = {
-            'icao_type_code': 'icao_type',
-            'manufacturer': 'manufacturer',
-            'country_iso': 'registered_owner_country_iso_name',
-            'country_name': 'registered_owner_country_name',
-            'mode_s': 'mode_s',
-            'operator_flag_code': 'registered_owner_operator_flag_code',
-            'owner': 'registered_owner',
-            'registration': 'registration',
-            'type': 'type'
-        }
+        print('\n***\n')
+        print(response)
+        print('\n***\n')
 
-        return requests_utils.map_keys(adsb_aircraft, mapped_keys)
+
+        result = {}
+        if (type(response) is dict and 'aircraft' in response):
+            adsb_aircraft = response['aircraft']
+            mapped_keys = {
+                'icao_type_code': 'icao_type',
+                'manufacturer': 'manufacturer',
+                'country_iso': 'registered_owner_country_iso_name',
+                'country_name': 'registered_owner_country_name',
+                'mode_s': 'mode_s',
+                'operator_flag_code': 'registered_owner_operator_flag_code',
+                'owner': 'registered_owner',
+                'registration': 'registration',
+                'type': 'type'
+            }
+            result = requests_utils.map_keys(adsb_aircraft, mapped_keys)
+        return result
     
 
     @staticmethod
