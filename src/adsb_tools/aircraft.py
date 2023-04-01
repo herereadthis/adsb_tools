@@ -99,16 +99,6 @@ class Aircraft:
         """
         keys_to_map = [
             'identity',
-            'country_iso',
-            'country_name',
-            'icao_type_code',
-            'manufacturer',
-            'mode_s',
-            'operator_flag_code',
-            'owner',
-            'registration',
-            'type',
-            'image',
             'flightaware'
         ]
         for key in keys_to_map:

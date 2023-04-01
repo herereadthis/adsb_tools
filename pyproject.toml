@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "adsb_tools"
-version = "0.1.37"
+version = "0.1.38"
 authors = [
     { name="herereadthis", email="herereadthis.github@gmail.com" },
 ]
