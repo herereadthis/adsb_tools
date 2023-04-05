@@ -1,7 +1,7 @@
 import math
 import numbers
 from adsb_tools.utils import requests_utils, spatial_utils
-# from pprint import pprint
+from pprint import pprint
 
 EARTH_RADIUS_KM = 6371.0
 
@@ -12,7 +12,7 @@ RADIUS_EARTH_NM = 3440.1  # Radius of the Earth in nautical miles
 RADIUS_EARTH_METERS = 6371000.0  # Radius of the Earth in meters
 
 class Aircraft:
-    def __init__(self, base_adsb_url, base_latitude=None, base_longitude=None):
+    def __init__(self, base_adsb_url, base_latitude=None, base_longitude=None, flightaware_api_key=None):
         self.base_adsb_url = base_adsb_url
         self.earth_radius_km = EARTH_RADIUS_KM
         aircraft_list = self.get_aircraft_list()
@@ -20,6 +20,7 @@ class Aircraft:
         self.nearest_aircraft = {}
         self.base_latitude = None
         self.base_longitude = None
+        self.flightaware_api_key = flightaware_api_key
         if (base_latitude and base_longitude):
             self.base_latitude = base_latitude
             self.base_longitude = base_longitude
@@ -91,6 +92,22 @@ class Aircraft:
             nearest_aircraft['flightaware']['live_url'] = live_url
 
         self.nearest_aircraft = nearest_aircraft
+
+    
+    def get_flightaware_ident(self):
+        headers = {'x-apikey': self.flightaware_api_key}
+        nearest_aircraft = self.nearest_aircraft
+        registration = nearest_aircraft['identity']['registration']
+        print('headers')
+        print(headers)
+
+        flightaware_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
+        json_obj = requests_utils.get_api(url=flightaware_url, headers=headers)
+
+        if ('flights' in json_obj and len(json_obj['flights']) != 0):
+            filtered_data = [d for d in json_obj['flights'] if not d['status'].lower().startswith(('scheduled', 'arrived'))]
+
+            print(filtered_data[0])
 
 
     def map_static_aircraft_options(self, stored_aircraft):
@@ -198,11 +215,6 @@ class Aircraft:
         adsb_db_url = f'https://api.adsbdb.com/v0/aircraft/{icao_24}'
         adsb_db_obj = requests_utils.get_api(adsb_db_url)
         response = adsb_db_obj['response']
-
-        print('\n***\n')
-        print(response)
-        print('\n***\n')
-
 
         result = {}
         if (type(response) is dict and 'aircraft' in response):
