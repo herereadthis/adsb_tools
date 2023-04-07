@@ -94,7 +94,7 @@ class Aircraft:
         self.nearest_aircraft = nearest_aircraft
 
     
-    def get_flightaware_ident(self):
+    def set_flightaware_ident(self):
         headers = {'x-apikey': self.flightaware_api_key}
         nearest_aircraft = self.nearest_aircraft
         registration = nearest_aircraft['identity']['registration']
@@ -104,10 +104,15 @@ class Aircraft:
         flightaware_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
         json_obj = requests_utils.get_api(url=flightaware_url, headers=headers)
 
+        current_flight = {}
         if ('flights' in json_obj and len(json_obj['flights']) != 0):
             filtered_data = [d for d in json_obj['flights'] if not d['status'].lower().startswith(('scheduled', 'arrived'))]
-
-            print(filtered_data[0])
+            current_flight = filtered_data[0]
+        
+        if bool(current_flight):
+            nearest_aircraft['flightaware'] = current_flight
+        
+        return current_flight
 
 
     def map_static_aircraft_options(self, stored_aircraft):
