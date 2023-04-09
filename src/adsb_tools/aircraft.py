@@ -87,9 +87,9 @@ class Aircraft:
             'image': aircraft_image
         }
 
-        if ('flightaware' in nearest_aircraft and bool(nearest_aircraft['flightaware'])):
+        if ('flightaware_urls' in nearest_aircraft and bool(nearest_aircraft['flightaware_urls'])):
             live_url = f"https://flightaware.com/live/flight/{flight_options['registration']}"
-            nearest_aircraft['flightaware']['live_url'] = live_url
+            nearest_aircraft['flightaware_urls']['live'] = live_url
 
         self.nearest_aircraft = nearest_aircraft
 
@@ -101,8 +101,8 @@ class Aircraft:
         print('headers')
         print(headers)
 
-        flightaware_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
-        json_obj = requests_utils.get_api(url=flightaware_url, headers=headers)
+        aeroapi_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
+        json_obj = requests_utils.get_api(url=aeroapi_url, headers=headers)
 
         current_flight = {}
         if ('flights' in json_obj and len(json_obj['flights']) != 0):
@@ -121,7 +121,8 @@ class Aircraft:
         """
         keys_to_map = [
             'identity',
-            'flightaware'
+            'flightaware',
+            'flightaware_urls'
         ]
         for key in keys_to_map:
             self.nearest_aircraft[key] = stored_aircraft[key]
@@ -178,8 +179,8 @@ class Aircraft:
                 if ('flight' in aircraft and bool(aircraft['flight'])):
                     redirect_url = f"https://flightaware.com/live/modes/{mode_s}/ident/{aircraft['flight']}/redirect"
 
-                new_aircraft['flightaware'] = {
-                    'redirect_url': redirect_url
+                new_aircraft['flightaware_urls'] = {
+                    'redirect': redirect_url
                 }
 
                 aircraft_list_with_options.append(new_aircraft)
