@@ -98,8 +98,6 @@ class Aircraft:
         headers = {'x-apikey': self.flightaware_api_key}
         nearest_aircraft = self.nearest_aircraft
         registration = nearest_aircraft['identity']['registration']
-        print('headers')
-        print(headers)
 
         aeroapi_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
         json_obj = requests_utils.get_api(url=aeroapi_url, headers=headers)
@@ -125,7 +123,8 @@ class Aircraft:
             'flightaware_urls'
         ]
         for key in keys_to_map:
-            self.nearest_aircraft[key] = stored_aircraft[key]
+            if key in stored_aircraft:
+                self.nearest_aircraft[key] = stored_aircraft[key]
 
 
     def get_aircraft_list(self):
