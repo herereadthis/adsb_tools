@@ -1,6 +1,6 @@
 import math
 import numbers
-from adsb_tools.utils import requests_utils, spatial_utils, dt_utils
+from adsb_tools.utils import requests_utils, spatial_utils, dt_utils, aeroapi_utils
 from pprint import pprint
 
 EARTH_RADIUS_KM = 6371.0
@@ -110,9 +110,8 @@ class Aircraft:
 
             if ('scheduled_in' in current_flight and 'estimated_in' in current_flight
                 and current_flight['scheduled_in']):
-                current_flight['diff_arrival_minutes'] = dt_utils.get_time_diffs(
-                    current_flight['estimated_in'], current_flight['scheduled_in']
-                )
+                current_flight['diff_arrival_minutes'] = aeroapi_utils.calculate_arrival_delay(current_flight)
+                current_flight['diff_departure_minutes'] = aeroapi_utils.calculate_departure_delay(current_flight)
         
         if bool(current_flight):
             nearest_aircraft['flightaware'] = current_flight

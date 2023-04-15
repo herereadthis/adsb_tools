@@ -1,11 +1,12 @@
-import datetime
+from datetime import datetime
 import pytz
+from typing import Optional
 
 def format_datetime(datetime_str, local_tz):
     if datetime_str is None:
         return None
 
-    datetime_obj = datetime.datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%SZ')
+    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%SZ')
     # tz = pytz.timezone(timezone)
     # print(f'dt: {dt}')
     # print(f'tz: {tz}')
@@ -29,13 +30,18 @@ def format_datetime(datetime_str, local_tz):
     # formatted_dt = localized_dt.strftime('%d %b, %I:%M %p %Z')
     # return formatted_dt
 
-def get_time_diffs(dt_str1, dt_str2):
+def get_time_diff(dt_str2: Optional[str], dt_str1: Optional[str]) -> Optional[int]:
     dt_format = '%Y-%m-%dT%H:%M:%SZ'
     diff_in_minutes = None
     try:
-        timestamp1 = datetime.datetime.strptime(dt_str1, dt_format)
-        timestamp2 = datetime.datetime.strptime(dt_str2, dt_format)
+        timestamp1 = datetime.strptime(dt_str1, dt_format)
+        timestamp2 = datetime.strptime(dt_str2, dt_format)
         diff_in_minutes = round((timestamp2 - timestamp1).total_seconds() / 60, 2)
+        diff_in_minutes = (timestamp2 - timestamp1).total_seconds() / 60
+        if (diff_in_minutes < 10):
+            diff_in_minutes = round(diff_in_minutes, 1)
+        else:
+            diff_in_minutes = round(diff_in_minutes)
     except ValueError:
         diff_in_minutes = None
     return diff_in_minutes
