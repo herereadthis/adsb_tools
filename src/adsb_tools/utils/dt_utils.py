@@ -22,7 +22,7 @@ def format_datetime(datetime_str, local_tz):
     datetime_obj_local = datetime_obj_utc.astimezone(local_tz)
     
     # Format the datetime object as a string in the desired format
-    formatted_datetime = datetime_obj_local.strftime('%d %b, %I:%M %p %Z')
+    formatted_datetime = datetime_obj_local.strftime('%a %d %b, %I:%M %p %Z')
 
     return formatted_datetime   
 
