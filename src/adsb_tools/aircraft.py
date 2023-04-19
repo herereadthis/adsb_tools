@@ -106,7 +106,7 @@ class Aircraft:
         if ('flights' in json_obj and len(json_obj['flights']) != 0):
             flights = json_obj['flights']
             filtered_data = [d for d in flights if not d['status'].lower().startswith(('scheduled', 'arrived'))]
-            current_flight = filtered_data[0]
+            current_flight = filtered_data[0] if len(filtered_data) > 0 else {}
 
             if ('scheduled_in' in current_flight and 'estimated_in' in current_flight
                 and current_flight['scheduled_in']):

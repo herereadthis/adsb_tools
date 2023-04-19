@@ -44,4 +44,6 @@ def get_time_diff(dt_str2: Optional[str], dt_str1: Optional[str]) -> Optional[in
             diff_in_minutes = round(diff_in_minutes)
     except ValueError:
         diff_in_minutes = None
+    except TypeError:
+        diff_in_minutes = None
     return diff_in_minutes
