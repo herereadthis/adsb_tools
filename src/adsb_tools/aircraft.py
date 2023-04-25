@@ -88,8 +88,19 @@ class Aircraft:
         }
 
         if ('flightaware_urls' in nearest_aircraft and bool(nearest_aircraft['flightaware_urls'])):
-            live_url = f"https://flightaware.com/live/flight/{flight_options['registration']}"
-            nearest_aircraft['flightaware_urls']['live'] = live_url
+            live_url = None
+            try:
+                live_url = f"https://flightaware.com/live/flight/{flight_options['registration']}"
+            except KeyError as e:
+                print('KeyError getting live flightaware url with fligh_options')
+                print(flight_options)
+                print(e)
+            except Exception as e:
+                print('Unknown getting live flightaware url with fligh_options')
+                print(flight_options)
+                print(e)
+            if live_url is not None:
+                nearest_aircraft['flightaware_urls']['live'] = live_url
 
         self.nearest_aircraft = nearest_aircraft
 
@@ -97,10 +108,16 @@ class Aircraft:
     def set_flightaware_ident(self):
         headers = {'x-apikey': self.flightaware_api_key}
         nearest_aircraft = self.nearest_aircraft
-        registration = nearest_aircraft['identity']['registration']
+        json_obj = {}
+        try:
+            registration = nearest_aircraft['identity']['registration']
+            aeroapi_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
+            json_obj = requests_utils.get_api(url=aeroapi_url, headers=headers)
+        except KeyError as e:
+            print('KeyError getting nearest_aircraft identity')
+            print(nearest_aircraft['identity'])
+            print(e)
 
-        aeroapi_url = f'https://aeroapi.flightaware.com/aeroapi/flights/{registration}'
-        json_obj = requests_utils.get_api(url=aeroapi_url, headers=headers)
 
         current_flight = {}
         if ('flights' in json_obj and len(json_obj['flights']) != 0):
