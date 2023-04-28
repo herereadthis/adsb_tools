@@ -64,7 +64,9 @@ def get_weather_data(forcast_hourly_url, local_timezone_name):
     weather_response = requests_utils.call_url(forcast_hourly_url)
     weather_json_obj = json.loads(weather_response.content)
 
-    current_weather = get_current_event(weather_json_obj['properties']['periods'])
+    current_weather = {}
+    if 'properties' in weather_json_obj:
+        current_weather = get_current_event(weather_json_obj['properties']['periods'])
 
     local_formatted_start_time = get_localized_time(current_weather['startTime'], local_timezone_obj)
     local_formatted_end_time = get_localized_time(current_weather['endTime'], local_timezone_obj)

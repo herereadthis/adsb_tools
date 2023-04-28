@@ -232,7 +232,7 @@ class Aircraft:
             'type': 'Type'
         }
 
-        return requests_utils.map_keys(hex_db_obj, mapped_keys)
+        return None if hex_db_obj is None else requests_utils.map_keys(hex_db_obj, mapped_keys)
 
 
     @staticmethod

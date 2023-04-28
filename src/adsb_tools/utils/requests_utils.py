@@ -33,16 +33,23 @@ def call_url(url: str, timeout: int = 5, headers: Dict[str, str] = {}) -> reques
             or `None` if an error occurs.
     """
     start_time = time.time() * 1000
+    response = None
     try:
         print(f"{url}: attempting request...")
         response = requests.get(url=url, timeout=timeout, headers=headers)
         response.raise_for_status()
-    except requests.exceptions.Timeout:
+    except requests.exceptions.Timeout as err:
         print(f"{url}: timeout error occurred.")
+        print(err)
+        response = err.request
     except requests.exceptions.HTTPError as err:
         print(f"{url}: HTTP error occurred: {err}")
+        print(err)
+        response = err.request
     except requests.exceptions.RequestException as err:
-        print(f"{url}: An error occurred: {err}")
+        print(f"{url}: An error occurred:\n{err}")
+        print(err)
+        response = err.request
     finally:
         end_time = time.time() * 1000
         print(f'{url}: request completed, {end_time - start_time:.0f}ms')
@@ -54,7 +61,15 @@ def get_api(url: str, timeout: int = 5, headers = {}):
     makes a GET request to a Rest API and returns a dictionary or list
     """
     result = call_url(url, timeout, headers)
-    content = json.loads(result.content)
+    content = None
+    try:
+        content = json.loads(result.content)
+    except AttributeError as err:
+        print(f"{url}: AttributeError error occurred:")
+        print(err)
+    except TypeError as err:
+        print(f"{url}: TypeError error occurred:")
+        print(err)
     return content
 
 
