@@ -125,10 +125,8 @@ class Aircraft:
             filtered_data = [d for d in flights if not d['status'].lower().startswith(('scheduled', 'arrived'))]
             current_flight = filtered_data[0] if len(filtered_data) > 0 else {}
 
-            if ('scheduled_in' in current_flight and 'estimated_in' in current_flight
-                and current_flight['scheduled_in']):
-                current_flight['diff_arrival_minutes'] = aeroapi_utils.calculate_arrival_delay(current_flight)
-                current_flight['diff_departure_minutes'] = aeroapi_utils.calculate_departure_delay(current_flight)
+            current_flight['diff_arrival_minutes'] = aeroapi_utils.calculate_arrival_delay(current_flight)
+            current_flight['diff_departure_minutes'] = aeroapi_utils.calculate_departure_delay(current_flight)
         
         if bool(current_flight):
             nearest_aircraft['flightaware'] = current_flight
@@ -242,23 +240,25 @@ class Aircraft:
         """
         adsb_db_url = f'https://api.adsbdb.com/v0/aircraft/{icao_24}'
         adsb_db_obj = requests_utils.get_api(adsb_db_url)
-        response = adsb_db_obj['response']
 
         result = {}
-        if (type(response) is dict and 'aircraft' in response):
-            adsb_aircraft = response['aircraft']
-            mapped_keys = {
-                'icao_type_code': 'icao_type',
-                'manufacturer': 'manufacturer',
-                'country_iso': 'registered_owner_country_iso_name',
-                'country_name': 'registered_owner_country_name',
-                'mode_s': 'mode_s',
-                'operator_flag_code': 'registered_owner_operator_flag_code',
-                'owner': 'registered_owner',
-                'registration': 'registration',
-                'type': 'type'
-            }
-            result = requests_utils.map_keys(adsb_aircraft, mapped_keys)
+        if adsb_db_obj is not None and 'response' in adsb_db_obj:
+            response = adsb_db_obj['response']
+            if (type(response) is dict and 'aircraft' in response):
+                adsb_aircraft = response['aircraft']
+
+                mapped_keys = {
+                    'icao_type_code': 'icao_type',
+                    'manufacturer': 'manufacturer',
+                    'country_iso': 'registered_owner_country_iso_name',
+                    'country_name': 'registered_owner_country_name',
+                    'mode_s': 'mode_s',
+                    'operator_flag_code': 'registered_owner_operator_flag_code',
+                    'owner': 'registered_owner',
+                    'registration': 'registration',
+                    'type': 'type'
+                }
+                result = requests_utils.map_keys(adsb_aircraft, mapped_keys)
         return result
     
 
