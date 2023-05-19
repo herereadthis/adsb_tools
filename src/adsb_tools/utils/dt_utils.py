@@ -78,15 +78,15 @@ def calculate_elapsed_percentage(past_time, past_timezone, future_time, future_t
     # Convert past and future times to datetime objects in their respective timezones
     past_datetime = pytz.timezone(past_timezone).localize(past_time)
     future_datetime = pytz.timezone(future_timezone).localize(future_time)
-    
+
     # Get current time in the third timezone
     current_datetime = datetime.now(pytz.timezone(current_timezone))
-    
+
     # Calculate the elapsed time and total time
     elapsed_time = current_datetime - past_datetime
     total_time = future_datetime - past_datetime
-    
+
     # Calculate the percentage of elapsed time
     percentage = (elapsed_time.total_seconds() / total_time.total_seconds()) * 100
-    
+
     return percentage

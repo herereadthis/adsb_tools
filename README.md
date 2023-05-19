@@ -28,6 +28,12 @@ nearest_aircraft = aircraft.nearest_aircraft
 
 This class has methods to augment and provide additional information about aircrafts based on ADS-B messages. The class takes in ADS-B messages from Dump1090 aircraft JSON and a base station's coordinates (latitude and longitude) as input. The class then calculates the distance and direction of each aircraft from the base station and adds this information to the ADS-B messages.
 
+```
+source env/bin/activate
+pip install -r requirements.txt
+./build.sh
+```
+
 The class has the following methods:
 
 * `__init__(self, base_adsb_url, base_latitude=None, base_longitude=None)`: The class constructor. It initializes the base_adsb_url, earth_radius_km, aircraft_list, and nearest_aircraft properties. If the base_latitude and base_longitude arguments are provided, the augment_aircraft_list() and set_nearest_aircraft() methods are called.
